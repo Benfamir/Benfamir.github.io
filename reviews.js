@@ -141,36 +141,37 @@ const MovieReviewsAndWatchlist = () => {
             </div>
 
             {selectedReview && (
-                <div className="modal" onClick={closeModal}>
-                    <div className="modal-content" onClick={e => e.stopPropagation()}>
-                        <button className="close-button" onClick={closeModal}>&times;</button>
-                        <h2>{selectedReview.title}</h2>
-                        <div className="review-section">
-                            <h4>Ben's Rating: {selectedReview.benRating}</h4>
-                            <p>{selectedReview.benThoughts}</p>
-                            {selectedReview.benReRating && (
-                                <div className="re-rating">
-                                    <h5>Re-rating: {selectedReview.benReRating}</h5>
-                                    <p>{selectedReview.benReRatingReason}</p>
-                                </div>
-                            )}
+    <div className="modal" onClick={closeModal}>
+        <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <button className="close-button" onClick={closeModal}>&times;</button>
+            <h2>{selectedReview.title}</h2>
+            <div className="modal-body">
+                <div className="review-section">
+                    <h4>Ben's Rating: {selectedReview.benRating}</h4>
+                    {selectedReview.benThoughts && <p>{selectedReview.benThoughts}</p>}
+                    {selectedReview.benReRating && (
+                        <div className="re-rating">
+                            <h5>Re-rating: {selectedReview.benReRating}</h5>
+                            <p>{selectedReview.benReRatingReason}</p>
                         </div>
-                        {selectedReview.lazaRating !== 0 && (
-                            <div className="review-section">
-                                <h4>Laza's Rating: {selectedReview.lazaRating}</h4>
-                                <p>{selectedReview.lazaThoughts}</p>
-                                {selectedReview.lazaReRating && (
-                                    <div className="re-rating">
-                                        <h5>Re-rating: {selectedReview.lazaReRating}</h5>
-                                        <p>{selectedReview.lazaReRatingReason}</p>
-                                    </div>
-                                )}
+                    )}
+                </div>
+                {selectedReview.lazaRating !== 0 && (
+                    <div className="review-section">
+                        <h4>Laza's Rating: {selectedReview.lazaRating}</h4>
+                        {selectedReview.lazaThoughts && <p>{selectedReview.lazaThoughts}</p>}
+                        {selectedReview.lazaReRating && (
+                            <div className="re-rating">
+                                <h5>Re-rating: {selectedReview.lazaReRating}</h5>
+                                <p>{selectedReview.lazaReRatingReason}</p>
                             </div>
                         )}
                     </div>
-                </div>
-            )}
-
+                )}
+            </div>
+        </div>
+    </div>
+)}
             <h2>Watch List</h2>
             <ul className="watchlist">
                 {watchlist.map((movie, index) => (
