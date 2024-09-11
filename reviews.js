@@ -7,6 +7,7 @@ const MovieReviewsAndWatchlist = () => {
     const [selectedReview, setSelectedReview] = React.useState(null);
     const [page, setPage] = React.useState(1);
     const [searchTerm, setSearchTerm] = React.useState('');
+    const [filterOption, setFilterOption] = React.useState('all');
     const reviewsPerPage = 20;
 
     React.useEffect(() => {
@@ -28,11 +29,11 @@ const MovieReviewsAndWatchlist = () => {
                     if (sheetName === reviewsSheetName) {
                         return {
                             title: row.c[0] ? row.c[0].v : '',
-                            benRating: row.c[1] ? parseFloat(row.c[1].v) : 0,
+                            benRating: row.c[1] ? parseFloat(row.c[1].v) : null,
                             benThoughts: row.c[2] ? row.c[2].v : '',
                             benReRating: row.c[3] ? parseFloat(row.c[3].v) : null,
                             benReRatingReason: row.c[4] ? row.c[4].v : '',
-                            lazaRating: row.c[5] ? parseFloat(row.c[5].v) : 0,
+                            lazaRating: row.c[5] ? parseFloat(row.c[5].v) : null,
                             lazaThoughts: row.c[6] ? row.c[6].v : '',
                             lazaReRating: row.c[7] ? parseFloat(row.c[7].v) : null,
                             lazaReRatingReason: row.c[8] ? row.c[8].v : ''
@@ -61,29 +62,51 @@ const MovieReviewsAndWatchlist = () => {
             direction = 'ascending';
         }
         setSortConfig({ key, direction });
+        setPage(1);
     };
 
     const getSortedReviews = React.useMemo(() => {
         let sortableReviews = [...reviews];
         if (sortConfig.key !== null) {
             sortableReviews.sort((a, b) => {
-                if (a[sortConfig.key] < b[sortConfig.key]) {
-                    return sortConfig.direction === 'ascending' ? -1 : 1;
+                if (sortConfig.key === 'benRating' || sortConfig.key === 'lazaRating') {
+                    return sortConfig.direction === 'ascending' 
+                        ? (a[sortConfig.key] || 0) - (b[sortConfig.key] || 0)
+                        : (b[sortConfig.key] || 0) - (a[sortConfig.key] || 0);
+                } else {
+                    if (a[sortConfig.key] < b[sortConfig.key]) {
+                        return sortConfig.direction === 'ascending' ? -1 : 1;
+                    }
+                    if (a[sortConfig.key] > b[sortConfig.key]) {
+                        return sortConfig.direction === 'ascending' ? 1 : -1;
+                    }
+                    return 0;
                 }
-                if (a[sortConfig.key] > b[sortConfig.key]) {
-                    return sortConfig.direction === 'ascending' ? 1 : -1;
-                }
-                return 0;
             });
         }
         return sortableReviews;
     }, [reviews, sortConfig]);
 
     const filteredReviews = React.useMemo(() => {
-        return getSortedReviews.filter(review =>
-            review.title.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-    }, [getSortedReviews, searchTerm]);
+        return getSortedReviews.filter(review => {
+            const matchesSearch = review.title.toLowerCase().includes(searchTerm.toLowerCase());
+            const hasBenReview = review.benThoughts && review.benThoughts.trim() !== '';
+            const hasLazaReview = review.lazaThoughts && review.lazaThoughts.trim() !== '';
+
+            switch (filterOption) {
+                case 'withReviews':
+                    return matchesSearch && (hasBenReview || hasLazaReview);
+                case 'withoutReviews':
+                    return matchesSearch && !hasBenReview && !hasLazaReview;
+                case 'benReviews':
+                    return matchesSearch && hasBenReview;
+                case 'lazaReviews':
+                    return matchesSearch && hasLazaReview;
+                default:
+                    return matchesSearch;
+            }
+        });
+    }, [getSortedReviews, searchTerm, filterOption]);
 
     const paginatedReviews = filteredReviews.slice((page - 1) * reviewsPerPage, page * reviewsPerPage);
 
@@ -97,8 +120,49 @@ const MovieReviewsAndWatchlist = () => {
 
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
-        setPage(1); // Reset to first page when searching
+        setPage(1);
     };
+
+    const handleFilterChange = (event) => {
+        setFilterOption(event.target.value);
+        setPage(1);
+    };
+
+    const getReviewClass = (review) => {
+        const hasBenReview = review.benThoughts && review.benThoughts.trim() !== '';
+        const hasLazaReview = review.lazaThoughts && review.lazaThoughts.trim() !== '';
+
+        if (hasBenReview && hasLazaReview) {
+            return 'both-review';
+        } else if (hasBenReview) {
+            return 'ben-review';
+        } else if (hasLazaReview) {
+            return 'laza-review';
+        }
+        return '';
+    };
+
+    const ColorKey = () => (
+        <div className="color-key">
+            <h3>Color Key:</h3>
+            <div className="key-item">
+                <div className="key-color ben-review"></div>
+                <span>Ben's Review</span>
+            </div>
+            <div className="key-item">
+                <div className="key-color laza-review"></div>
+                <span>Laza's Review</span>
+            </div>
+            <div className="key-item">
+                <div className="key-color both-review"></div>
+                <span>Both Reviews</span>
+            </div>
+            <div className="key-item">
+                <div className="key-color"></div>
+                <span>No Review</span>
+            </div>
+        </div>
+    );
 
     if (error) {
         return <div>Error: {error}</div>;
@@ -109,6 +173,7 @@ const MovieReviewsAndWatchlist = () => {
             <h1>Movie Reviews and Watch List</h1>
             
             <h2>Reviews</h2>
+            <ColorKey />
             <div className="search-and-sort">
                 <input
                     type="text"
@@ -117,61 +182,77 @@ const MovieReviewsAndWatchlist = () => {
                     onChange={handleSearchChange}
                     className="search-input"
                 />
-                <div className="sort-buttons">
-                    <button onClick={() => sortReviews('benRating')}>
-                        Sort by Ben's Ratings {sortConfig.key === 'benRating' && (sortConfig.direction === 'ascending' ? '↑' : '↓')}
-                    </button>
-                    <button onClick={() => sortReviews('lazaRating')}>
-                        Sort by Laza's Ratings {sortConfig.key === 'lazaRating' && (sortConfig.direction === 'ascending' ? '↑' : '↓')}
-                    </button>
+                <div className="filter-sort-container">
+                    <select onChange={handleFilterChange} value={filterOption} className="filter-select">
+                        <option value="all">All Movies</option>
+                        <option value="withReviews">With Reviews</option>
+                        <option value="withoutReviews">Without Reviews</option>
+                        <option value="benReviews">Ben's Reviews</option>
+                        <option value="lazaReviews">Laza's Reviews</option>
+                    </select>
+                    <div className="sort-buttons">
+                        <button onClick={() => sortReviews('title')}>
+                            Sort by Title {sortConfig.key === 'title' && (sortConfig.direction === 'ascending' ? '↑' : '↓')}
+                        </button>
+                        <button onClick={() => sortReviews('benRating')}>
+                            Sort by Ben's Ratings {sortConfig.key === 'benRating' && (sortConfig.direction === 'ascending' ? '↑' : '↓')}
+                        </button>
+                        <button onClick={() => sortReviews('lazaRating')}>
+                            Sort by Laza's Ratings {sortConfig.key === 'lazaRating' && (sortConfig.direction === 'ascending' ? '↑' : '↓')}
+                        </button>
+                    </div>
                 </div>
             </div>
             <div className="reviews-grid">
                 {paginatedReviews.map((review, index) => (
-                    <div key={index} className="review-card" onClick={() => handleReviewClick(review)}>
+                    <div key={index} className={`review-card ${getReviewClass(review)}`} onClick={() => handleReviewClick(review)}>
                         <h3>{review.title}</h3>
-                        <p>Ben's Rating: {review.benRating}</p>
+                        <p>Ben's Rating: {review.benRating !== null ? review.benRating : 'N/A'}</p>
+                        <p>Laza's Rating: {review.lazaRating !== null ? review.lazaRating : 'N/A'}</p>
                     </div>
                 ))}
             </div>
             <div className="pagination">
                 <button onClick={() => setPage(prev => Math.max(prev - 1, 1))} disabled={page === 1}>Previous</button>
-                <span>Page {page}</span>
+                <span>Page {page} of {Math.ceil(filteredReviews.length / reviewsPerPage)}</span>
                 <button onClick={() => setPage(prev => prev + 1)} disabled={page * reviewsPerPage >= filteredReviews.length}>Next</button>
             </div>
 
             {selectedReview && (
-    <div className="modal" onClick={closeModal}>
-        <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <button className="close-button" onClick={closeModal}>&times;</button>
-            <h2>{selectedReview.title}</h2>
-            <div className="modal-body">
-                <div className="review-section">
-                    <h4>Ben's Rating: {selectedReview.benRating}</h4>
-                    {selectedReview.benThoughts && <p>{selectedReview.benThoughts}</p>}
-                    {selectedReview.benReRating && (
-                        <div className="re-rating">
-                            <h5>Re-rating: {selectedReview.benReRating}</h5>
-                            <p>{selectedReview.benReRatingReason}</p>
+                <div className="modal" onClick={closeModal}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <button className="close-button" onClick={closeModal}>&times;</button>
+                        <h2>{selectedReview.title}</h2>
+                        <div className="modal-body">
+                            {selectedReview.benThoughts && (
+                                <div className="review-section">
+                                    <h4>Ben's Rating: {selectedReview.benRating !== null ? selectedReview.benRating : 'N/A'}</h4>
+                                    <p>{selectedReview.benThoughts}</p>
+                                    {selectedReview.benReRating !== null && (
+                                        <div className="re-rating">
+                                            <h5>Re-rating: {selectedReview.benReRating}</h5>
+                                            <p>{selectedReview.benReRatingReason}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            {selectedReview.lazaThoughts && (
+                                <div className="review-section">
+                                    <h4>Laza's Rating: {selectedReview.lazaRating !== null ? selectedReview.lazaRating : 'N/A'}</h4>
+                                    <p>{selectedReview.lazaThoughts}</p>
+                                    {selectedReview.lazaReRating !== null && (
+                                        <div className="re-rating">
+                                            <h5>Re-rating: {selectedReview.lazaReRating}</h5>
+                                            <p>{selectedReview.lazaReRatingReason}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
-                    )}
-                </div>
-                {selectedReview.lazaRating !== 0 && (
-                    <div className="review-section">
-                        <h4>Laza's Rating: {selectedReview.lazaRating}</h4>
-                        {selectedReview.lazaThoughts && <p>{selectedReview.lazaThoughts}</p>}
-                        {selectedReview.lazaReRating && (
-                            <div className="re-rating">
-                                <h5>Re-rating: {selectedReview.lazaReRating}</h5>
-                                <p>{selectedReview.lazaReRatingReason}</p>
-                            </div>
-                        )}
                     </div>
-                )}
-            </div>
-        </div>
-    </div>
-)}
+                </div>
+            )}
+
             <h2>Watch List</h2>
             <ul className="watchlist">
                 {watchlist.map((movie, index) => (

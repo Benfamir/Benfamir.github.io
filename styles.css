@@ -148,7 +148,7 @@ p {
 }
 
 .timeline-item {
-    background-color: rgba(30, 41, 59, 0.7);
+    background-color: var(--section-bg);
     backdrop-filter: blur(5px);
     padding: 20px;
     border-radius: 8px;
@@ -185,7 +185,7 @@ p {
     background-color: var(--section-bg);
     padding: 15px;
     border-radius: 8px;
-    border: 1px solid var(--section-border);
+    border: 2px solid var(--section-border);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
@@ -217,6 +217,18 @@ p {
     margin-bottom: 0;
 }
 
+.review-card.ben-review {
+    border-color: #3b82f6;
+}
+
+.review-card.laza-review {
+    border-color: #10b981;
+}
+
+.review-card.both-review {
+    border-image: linear-gradient(45deg, #3b82f6, #10b981, #f59e0b, #ef4444) 1;
+}
+
 /* Modal styles */
 .modal {
     position: fixed;
@@ -232,7 +244,8 @@ p {
 }
 
 .modal-content {
-    background-color: rgba(30, 41, 59, 0.9);
+    background-color: var(--section-bg);
+    color: var(--text-color);
     backdrop-filter: blur(10px);
     padding: 30px;
     border-radius: 15px;
@@ -273,7 +286,7 @@ p {
 }
 
 .review-section {
-    background-color: rgba(51, 65, 85, 0.5);
+    background-color: var(--section-bg);
     border-radius: 10px;
     padding: 20px;
     margin-bottom: 20px;
@@ -294,7 +307,7 @@ p {
 }
 
 .re-rating {
-    background-color: rgba(71, 85, 105, 0.5);
+    background-color: var(--menu-hover);
     border-radius: 10px;
     padding: 15px;
     margin-top: 15px;
@@ -353,25 +366,18 @@ p {
 /* Search and sort container */
 .search-and-sort {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+    flex-direction: column;
     gap: 10px;
-    position: relative;
-    z-index: 10;
+    margin-bottom: 20px;
 }
 
 /* Search input styles */
 .search-input {
-    flex-grow: 1;
-    min-width: 200px;
     padding: 10px;
     font-size: 16px;
     border: 1px solid var(--section-border);
     border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(5px);
+    background-color: var(--section-bg);
     color: var(--text-color);
 }
 
@@ -397,6 +403,48 @@ p {
     text-align: center;
     color: var(--text-color);
     font-weight: bold;
+}
+
+/* Color key styles */
+.color-key {
+    background-color: var(--section-bg);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.color-key h3 {
+    width: 100%;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.key-item {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.key-color {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--section-border);
+    margin-right: 10px;
+}
+
+.key-color.ben-review {
+    border-color: #3b82f6;
+}
+
+.key-color.laza-review {
+    border-color: #10b981;
+}
+
+.key-color.both-review {
+    border-image: linear-gradient(45deg, #3b82f6, #10b981, #f59e0b, #ef4444) 1;
 }
 
 /* Mobile responsiveness */
@@ -458,4 +506,66 @@ p {
     .timeline-item:before {
         left: -23px;
     }
+}
+
+.filter-sort-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.filter-select {
+    padding: 5px 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    background-color: var(--section-bg);
+    color: var(--text-color);
+    border: 1px solid var(--section-border);
+}
+
+.sort-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.sort-buttons button {
+    padding: 5px 10px;
+    font-size: 14px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.sort-buttons button:hover {
+    opacity: 0.9;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.pagination button {
+    padding: 5px 10px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination span {
+    font-size: 14px;
 }
