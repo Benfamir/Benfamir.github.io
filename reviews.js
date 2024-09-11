@@ -1,6 +1,5 @@
 // reviews.js
 const MovieReviewsAndWatchlist = () => {
-    console.log('Rendering MovieReviewsAndWatchlist');
     const [reviews, setReviews] = React.useState([]);
     const [watchlist, setWatchlist] = React.useState([]);
     const [sortConfig, setSortConfig] = React.useState({ key: null, direction: 'descending' });
@@ -11,7 +10,6 @@ const MovieReviewsAndWatchlist = () => {
     const reviewsPerPage = 20;
 
     React.useEffect(() => {
-        console.log('Fetching data...');
         const sheetId = '1KAFkfG8Q0j--wtUM152ZsBv-U6lzvh8xk_u4ObK7HGM';
         const reviewsSheetName = 'Sheet1';
         const watchlistSheetName = 'Sheet2';
@@ -46,7 +44,6 @@ const MovieReviewsAndWatchlist = () => {
                     }
                 });
 
-                console.log(`Fetched ${sheetName} data:`, formattedData);
                 setStateFunction(formattedData);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -58,11 +55,6 @@ const MovieReviewsAndWatchlist = () => {
         fetchData(watchlistSheetName, setWatchlist);
     }, []);
 
-    React.useEffect(() => {
-        console.log('Current reviews:', reviews);
-        console.log('Current watchlist:', watchlist);
-    }, [reviews, watchlist]);
-
     const sortReviews = (key) => {
         let direction = 'descending';
         if (sortConfig.key === key && sortConfig.direction === 'descending') {
@@ -72,7 +64,6 @@ const MovieReviewsAndWatchlist = () => {
     };
 
     const getSortedReviews = React.useMemo(() => {
-        console.log('Sorting reviews...');
         let sortableReviews = [...reviews];
         if (sortConfig.key !== null) {
             sortableReviews.sort((a, b) => {
@@ -89,7 +80,6 @@ const MovieReviewsAndWatchlist = () => {
     }, [reviews, sortConfig]);
 
     const filteredReviews = React.useMemo(() => {
-        console.log('Filtering reviews...');
         return getSortedReviews.filter(review =>
             review.title.toLowerCase().includes(searchTerm.toLowerCase())
         );
@@ -113,8 +103,6 @@ const MovieReviewsAndWatchlist = () => {
     if (error) {
         return <div>Error: {error}</div>;
     }
-
-    console.log('Rendering reviews:', paginatedReviews);
 
     return (
         <div>
@@ -155,8 +143,9 @@ const MovieReviewsAndWatchlist = () => {
             {selectedReview && (
                 <div className="modal" onClick={closeModal}>
                     <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <button className="close-button" onClick={closeModal}>&times;</button>
                         <h2>{selectedReview.title}</h2>
-                        <div className="ben-review">
+                        <div className="review-section">
                             <h4>Ben's Rating: {selectedReview.benRating}</h4>
                             <p>{selectedReview.benThoughts}</p>
                             {selectedReview.benReRating && (
@@ -167,7 +156,7 @@ const MovieReviewsAndWatchlist = () => {
                             )}
                         </div>
                         {selectedReview.lazaRating !== 0 && (
-                            <div className="laza-review">
+                            <div className="review-section">
                                 <h4>Laza's Rating: {selectedReview.lazaRating}</h4>
                                 <p>{selectedReview.lazaThoughts}</p>
                                 {selectedReview.lazaReRating && (
@@ -178,7 +167,6 @@ const MovieReviewsAndWatchlist = () => {
                                 )}
                             </div>
                         )}
-                        <button onClick={closeModal}>Close</button>
                     </div>
                 </div>
             )}
