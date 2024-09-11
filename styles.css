@@ -366,18 +366,25 @@ p {
 /* Search and sort container */
 .search-and-sort {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
+    gap: 10px;
+    position: relative;
+    z-index: 10;
 }
 
 /* Search input styles */
 .search-input {
+    flex-grow: 1;
+    min-width: 200px;
     padding: 10px;
     font-size: 16px;
     border: 1px solid var(--section-border);
     border-radius: 5px;
-    background-color: var(--section-bg);
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
     color: var(--text-color);
 }
 
@@ -387,22 +394,31 @@ p {
 }
 
 /* Watchlist styles */
-.watchlist {
-    list-style-type: none;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 10px;
+.watchlist-section {
+    margin-top: 40px;
 }
 
-.watchlist li {
+.watchlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.watchlist-item {
     background-color: var(--section-bg);
-    padding: 10px;
-    border-radius: 5px;
+    padding: 15px;
+    border-radius: 8px;
     border: 1px solid var(--section-border);
     text-align: center;
     color: var(--text-color);
     font-weight: bold;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.watchlist-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 /* Color key styles */
@@ -445,6 +461,17 @@ p {
 
 .key-color.both-review {
     border-image: linear-gradient(45deg, #3b82f6, #10b981, #f59e0b, #ef4444) 1;
+}
+
+/* Filter select styles */
+.filter-select {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid var(--section-border);
+    border-radius: 5px;
+    background-color: var(--section-bg);
+    color: var(--text-color);
+    margin-right: 10px;
 }
 
 /* Mobile responsiveness */
@@ -506,66 +533,8 @@ p {
     .timeline-item:before {
         left: -23px;
     }
-}
 
-.filter-sort-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-}
-
-.filter-select {
-    padding: 5px 10px;
-    font-size: 16px;
-    border-radius: 5px;
-    background-color: var(--section-bg);
-    color: var(--text-color);
-    border: 1px solid var(--section-border);
-}
-
-.sort-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-.sort-buttons button {
-    padding: 5px 10px;
-    font-size: 14px;
-    background-color: var(--accent-color);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.sort-buttons button:hover {
-    opacity: 0.9;
-}
-
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 20px;
-    gap: 10px;
-}
-
-.pagination button {
-    padding: 5px 10px;
-    background-color: var(--accent-color);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.pagination button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.pagination span {
-    font-size: 14px;
+    .watchlist-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
 }

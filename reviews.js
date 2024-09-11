@@ -8,7 +8,7 @@ const MovieReviewsAndWatchlist = () => {
     const [page, setPage] = React.useState(1);
     const [searchTerm, setSearchTerm] = React.useState('');
     const [filterOption, setFilterOption] = React.useState('all');
-    const reviewsPerPage = 20;
+    const reviewsPerPage = 12;
 
     React.useEffect(() => {
         const sheetId = '1KAFkfG8Q0j--wtUM152ZsBv-U6lzvh8xk_u4ObK7HGM';
@@ -25,25 +25,27 @@ const MovieReviewsAndWatchlist = () => {
                 const data = await response.text();
                 const jsonData = JSON.parse(data.substring(47).slice(0, -2));
                 
-                const formattedData = jsonData.table.rows.map(row => {
-                    if (sheetName === reviewsSheetName) {
-                        return {
-                            title: row.c[0] ? row.c[0].v : '',
-                            benRating: row.c[1] ? parseFloat(row.c[1].v) : null,
-                            benThoughts: row.c[2] ? row.c[2].v : '',
-                            benReRating: row.c[3] ? parseFloat(row.c[3].v) : null,
-                            benReRatingReason: row.c[4] ? row.c[4].v : '',
-                            lazaRating: row.c[5] ? parseFloat(row.c[5].v) : null,
-                            lazaThoughts: row.c[6] ? row.c[6].v : '',
-                            lazaReRating: row.c[7] ? parseFloat(row.c[7].v) : null,
-                            lazaReRatingReason: row.c[8] ? row.c[8].v : ''
-                        };
-                    } else {
-                        return {
-                            title: row.c[0] ? row.c[0].v : '',
-                        };
-                    }
-                });
+                const formattedData = jsonData.table.rows
+                    .filter((row, index) => index !== 0) // Filter out the first row (header)
+                    .map(row => {
+                        if (sheetName === reviewsSheetName) {
+                            return {
+                                title: row.c[0] ? row.c[0].v : '',
+                                benRating: row.c[1] ? parseFloat(row.c[1].v) : null,
+                                benThoughts: row.c[2] ? row.c[2].v : '',
+                                benReRating: row.c[3] ? parseFloat(row.c[3].v) : null,
+                                benReRatingReason: row.c[4] ? row.c[4].v : '',
+                                lazaRating: row.c[5] ? parseFloat(row.c[5].v) : null,
+                                lazaThoughts: row.c[6] ? row.c[6].v : '',
+                                lazaReRating: row.c[7] ? parseFloat(row.c[7].v) : null,
+                                lazaReRatingReason: row.c[8] ? row.c[8].v : ''
+                            };
+                        } else {
+                            return {
+                                title: row.c[0] ? row.c[0].v : '',
+                            };
+                        }
+                    });
 
                 setStateFunction(formattedData);
             } catch (error) {
@@ -224,41 +226,47 @@ const MovieReviewsAndWatchlist = () => {
                         <button className="close-button" onClick={closeModal}>&times;</button>
                         <h2>{selectedReview.title}</h2>
                         <div className="modal-body">
-                            {selectedReview.benThoughts && (
-                                <div className="review-section">
-                                    <h4>Ben's Rating: {selectedReview.benRating !== null ? selectedReview.benRating : 'N/A'}</h4>
+                            <div className="review-section">
+                                <h4>Ben's Rating: {selectedReview.benRating !== null ? selectedReview.benRating : 'N/A'}</h4>
+                                {selectedReview.benThoughts ? (
                                     <p>{selectedReview.benThoughts}</p>
-                                    {selectedReview.benReRating !== null && (
-                                        <div className="re-rating">
-                                            <h5>Re-rating: {selectedReview.benReRating}</h5>
-                                            <p>{selectedReview.benReRatingReason}</p>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                            {selectedReview.lazaThoughts && (
-                                <div className="review-section">
-                                    <h4>Laza's Rating: {selectedReview.lazaRating !== null ? selectedReview.lazaRating : 'N/A'}</h4>
+                                ) : (
+                                    <p>No written review available.</p>
+                                )}
+                                {selectedReview.benReRating !== null && (
+                                    <div className="re-rating">
+                                        <h5>Re-rating: {selectedReview.benReRating}</h5>
+                                        <p>{selectedReview.benReRatingReason || 'No reason provided.'}</p>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="review-section">
+                                <h4>Laza's Rating: {selectedReview.lazaRating !== null ? selectedReview.lazaRating : 'N/A'}</h4>
+                                {selectedReview.lazaThoughts ? (
                                     <p>{selectedReview.lazaThoughts}</p>
-                                    {selectedReview.lazaReRating !== null && (
-                                        <div className="re-rating">
-                                            <h5>Re-rating: {selectedReview.lazaReRating}</h5>
-                                            <p>{selectedReview.lazaReRatingReason}</p>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                                ) : (
+                                    <p>No written review available.</p>
+                                )}
+                                {selectedReview.lazaReRating !== null && (
+                                    <div className="re-rating">
+                                        <h5>Re-rating: {selectedReview.lazaReRating}</h5>
+                                        <p>{selectedReview.lazaReRatingReason || 'No reason provided.'}</p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
             )}
 
-            <h2>Watch List</h2>
-            <ul className="watchlist">
-                {watchlist.map((movie, index) => (
-                    <li key={index}>{movie.title}</li>
-                ))}
-            </ul>
+            <div className="watchlist-section">
+                <h2>Watch List</h2>
+                <div className="watchlist-grid">
+                    {watchlist.map((movie, index) => (
+                        <div key={index} className="watchlist-item">{movie.title}</div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 };
