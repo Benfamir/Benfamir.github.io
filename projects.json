@@ -1,0 +1,27 @@
+[
+  {
+    "title": "Project 1",
+    "entries": [
+      {
+        "title": "Latest Update",
+        "date": "2023-09-14",
+        "content": "This is the latest update for Project 1. It includes new features and bug fixes."
+      },
+      {
+        "title": "Initial Release",
+        "date": "2023-08-01",
+        "content": "Project 1 has been officially launched with its core functionalities."
+      }
+    ]
+  },
+  {
+    "title": "Project 2",
+    "entries": [
+      {
+        "title": "Progress Update",
+        "date": "2023-09-10",
+        "content": "Project 2 is making steady progress. New modules have been added."
+      }
+    ]
+  }
+]
