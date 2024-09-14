@@ -3,48 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ben Gray - Projects</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Projects - Ben Gray</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
-<body class="fade-in">
-    <!-- Navigation Menu -->
+<body>
     <nav id="menu">
         <ul>
             <li><a href="index.html"><i class="fas fa-home"></i><span>Home</span></a></li>
-            <li class="active"><a href="projects.html"><i class="fas fa-project-diagram"></i><span>Projects</span></a></li>
-            <li><a href="reviews.html"><i class="fas fa-star"></i> Reviews</a></li>
+            <li><a href="projects.html" class="active"><i class="fas fa-project-diagram"></i><span>Projects</span></a></li>
+            <li><a href="reviews.html"><i class="fas fa-star"></i><span>Reviews</span></a></li>
             <li><a href="#"><i class="fas fa-envelope"></i><span>Contact</span></a></li>
         </ul>
     </nav>
 
-    <!-- Main Content -->
-    <main id="content">
-        <h1>Projects</h1>
-        <p>Welcome to my projects page. Here you can find information about my completed projects and those currently in progress.</p>
-        
-        <div class="project-section">
-            <h2>Completed Projects</h2>
-            <div class="project-grid">
-                <div class="project-card">
-                    <p>Nothing to see here yet! Check back soon for updates on my completed projects.</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="project-section">
-            <h2>In Progress</h2>
-            <div class="project-grid">
-                <div class="project-card">
-                    <p>Exciting projects are in the works! Stay tuned for updates on my current endeavors.</p>
-                </div>
-            </div>
-        </div>
-    </main>
+    <button id="theme-toggle">
+        <i class="fas fa-moon"></i>
+    </button>
 
-    <!-- Theme Toggle Button -->
-    <button id="theme-toggle"><i class="fas fa-moon"></i></button>
+    <div id="content" role="main">
+        <h1>Projects</h1>
+        <div class="search-and-sort">
+            <input type="text" id="project-search" placeholder="Search projects..." class="search-input">
+            <div class="sort-buttons">
+                <button id="sort-latest">Sort by Latest Entry</button>
+                <button id="sort-overview">Sort by Project Overview</button>
+            </div>
+        </div>
+        <div id="projects-container" class="projects-grid"></div>
+    </div>
 
     <script src="script.js"></script>
+    <script src="projects.js"></script>
 </body>
 </html>
