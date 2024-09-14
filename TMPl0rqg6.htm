@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - Ben Gray</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <nav id="menu">
+        <ul>
+            <li><a href="index.html"><i class="fas fa-home"></i><span>Home</span></a></li>
+            <li><a href="projects.html" class="active"><i class="fas fa-project-diagram"></i><span>Projects</span></a></li>
+            <li><a href="reviews.html"><i class="fas fa-star"></i><span>Reviews</span></a></li>
+            <li><a href="#"><i class="fas fa-envelope"></i><span>Contact</span></a></li>
+        </ul>
+    </nav>
+
+    <button id="theme-toggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div id="content" role="main">
+        <h1>Projects</h1>
+        <div class="search-and-sort">
+            <input type="text" id="project-search" placeholder="Search projects..." class="search-input">
+            <div class="sort-buttons">
+                <button id="sort-latest">Sort by Latest Entry</button>
+                <button id="sort-overview">Sort by Project Overview</button>
+            </div>
+        </div>
+        <div id="projects-container" class="projects-grid"></div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="projects.js"></script>
+	
+<script>
+console.log("Projects script is running");
+// Paste the entire content of your projects.js file here
+	document.addEventListener('DOMContentLoaded', () => {
+    const projectsContainer = document.getElementById('projects-container');
+    const searchInput = document.getElementById('project-search');
+    const sortLatestBtn = document.getElementById('sort-latest');
+    const sortOverviewBtn = document.getElementById('sort-overview');
+
+    let projects = [];
+    let currentSort = 'latest';
+
+    // Function to fetch project data from Google Docs
+    async function fetchProjects() {
+        const projectUrls = [
+            'https://docs.google.com/document/d/1vMsemR4_eKQftkNH2yWcHYuq02tDsTS6Zm7wLkLfKAk/pub'
+            // Add more project URLs here
+        ];
+
+        for (const url of projectUrls) {
+            try {
+                const response = await fetch(url);
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                const project = {
+                    title: doc.querySelector('h1').textContent,
+                    entries: []
+                };
+
+                let currentEntry = null;
+                doc.body.childNodes.forEach(node => {
+                    if (node.nodeName === 'H2') {
+                        if (currentEntry) project.entries.push(currentEntry);
+                        currentEntry = { title: node.textContent, content: '' };
+                    } else if (node.nodeName === 'H3' && currentEntry) {
+                        currentEntry.date = node.textContent;
+                    } else if (currentEntry) {
+                        currentEntry.content += node.textContent;
+                    }
+                });
+
+                if (currentEntry) project.entries.push(currentEntry);
+                projects.push(project);
+            } catch (error) {
+                console.error('Error fetching project:', error);
+            }
+        }
+
+        console.log('Fetched projects:', projects);
+        renderProjects();
+    }
+
+    // Function to render projects
+    function renderProjects() {
+        projectsContainer.innerHTML = '';
+        const sortedProjects = sortProjects(projects, currentSort);
+
+        sortedProjects.forEach(project => {
+            const card = document.createElement('div');
+            card.className = 'project-card';
+            card.innerHTML = `
+                <h3>${project.title}</h3>
+                <p>${project.entries[0].content.substring(0, 100)}...</p>
+                <p>Last updated: ${project.entries[0].date}</p>
+            `;
+            card.addEventListener('click', () => openProjectModal(project));
+            projectsContainer.appendChild(card);
+        });
+    }
+
+    // Function to open project modal
+    function openProjectModal(project) {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <button class="close-button">&times;</button>
+                <h2>${project.title}</h2>
+                <div class="modal-body">
+                    ${project.entries.map(entry => `
+                        <div class="project-entry">
+                            <h4>${entry.title}</h4>
+                            <p>${entry.date}</p>
+                            <p>${entry.content}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+
+        modal.querySelector('.close-button').addEventListener('click', () => modal.remove());
+        document.body.appendChild(modal);
+    }
+
+    // Function to sort projects
+    function sortProjects(projectsToSort, sortType) {
+        return [...projectsToSort].sort((a, b) => {
+            if (sortType === 'latest') {
+                return new Date(b.entries[0].date) - new Date(a.entries[0].date);
+            } else {
+                return a.title.localeCompare(b.title);
+            }
+        });
+    }
+
+    // Event listeners for sorting and searching
+    sortLatestBtn.addEventListener('click', () => {
+        currentSort = 'latest';
+        renderProjects();
+    });
+
+    sortOverviewBtn.addEventListener('click', () => {
+        currentSort = 'overview';
+        renderProjects();
+    });
+
+    searchInput.addEventListener('input', () => {
+        const searchTerm = searchInput.value.toLowerCase();
+        const filteredProjects = projects.filter(project => 
+            project.title.toLowerCase().includes(searchTerm) ||
+            project.entries.some(entry => entry.content.toLowerCase().includes(searchTerm))
+        );
+        renderProjects(filteredProjects);
+    });
+
+    // Initial fetch of projects
+    fetchProjects();
+});
+</script>
+	
+</body>
+</html>
