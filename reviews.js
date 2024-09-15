@@ -5,10 +5,8 @@ const MovieReviewsAndWatchlist = () => {
     const [sortConfig, setSortConfig] = React.useState({ key: null, direction: 'descending' });
     const [error, setError] = React.useState(null);
     const [selectedReview, setSelectedReview] = React.useState(null);
-    const [page, setPage] = React.useState(1);
     const [searchTerm, setSearchTerm] = React.useState('');
     const [filterOption, setFilterOption] = React.useState('all');
-    const reviewsPerPage = 12;
 
     React.useEffect(() => {
         const sheetId = '1KAFkfG8Q0j--wtUM152ZsBv-U6lzvh8xk_u4ObK7HGM';
@@ -64,7 +62,6 @@ const MovieReviewsAndWatchlist = () => {
             direction = 'ascending';
         }
         setSortConfig({ key, direction });
-        setPage(1);
     };
 
     const getSortedReviews = React.useMemo(() => {
@@ -110,7 +107,7 @@ const MovieReviewsAndWatchlist = () => {
         });
     }, [getSortedReviews, searchTerm, filterOption]);
 
-    const paginatedReviews = filteredReviews.slice((page - 1) * reviewsPerPage, page * reviewsPerPage);
+    const recentReviews = reviews.slice(-5).reverse();
 
     const handleReviewClick = (review) => {
         setSelectedReview(review);
@@ -122,12 +119,10 @@ const MovieReviewsAndWatchlist = () => {
 
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
-        setPage(1);
     };
 
     const handleFilterChange = (event) => {
         setFilterOption(event.target.value);
-        setPage(1);
     };
 
     const getReviewClass = (review) => {
@@ -146,22 +141,22 @@ const MovieReviewsAndWatchlist = () => {
 
     const ColorKey = () => (
         <div className="color-key">
-            <h3>Color Key:</h3>
+            <h3>Colour Key:</h3>
             <div className="key-item">
                 <div className="key-color ben-review"></div>
-                <span>Ben's Review</span>
+                <span>Ben has written a review</span>
             </div>
             <div className="key-item">
                 <div className="key-color laza-review"></div>
-                <span>Laza's Review</span>
+                <span>Laza has written a review</span>
             </div>
             <div className="key-item">
                 <div className="key-color both-review"></div>
-                <span>Both Reviews</span>
+                <span>Both have written a review</span>
             </div>
             <div className="key-item">
                 <div className="key-color"></div>
-                <span>No Review</span>
+                <span>No written review</span>
             </div>
         </div>
     );
@@ -171,10 +166,21 @@ const MovieReviewsAndWatchlist = () => {
     }
 
     return (
-        <div>
+        <div className="reviews-container">
             <h1>Movie Reviews and Watch List</h1>
             
-            <h2>Reviews</h2>
+            <h2>Recently Reviewed</h2>
+            <div className="recent-reviews">
+                {recentReviews.map((review, index) => (
+                    <div key={index} className={`review-card ${getReviewClass(review)}`} onClick={() => handleReviewClick(review)}>
+                        <h3>{review.title}</h3>
+                        <p>Ben's Rating: {review.benRating !== null ? review.benRating : 'N/A'}</p>
+                        <p>Laza's Rating: {review.lazaRating !== null ? review.lazaRating : 'N/A'}</p>
+                    </div>
+                ))}
+            </div>
+
+            <h2>All Reviews</h2>
             <ColorKey />
             <div className="search-and-sort">
                 <input
@@ -205,19 +211,16 @@ const MovieReviewsAndWatchlist = () => {
                     </div>
                 </div>
             </div>
-            <div className="reviews-grid">
-                {paginatedReviews.map((review, index) => (
-                    <div key={index} className={`review-card ${getReviewClass(review)}`} onClick={() => handleReviewClick(review)}>
-                        <h3>{review.title}</h3>
-                        <p>Ben's Rating: {review.benRating !== null ? review.benRating : 'N/A'}</p>
-                        <p>Laza's Rating: {review.lazaRating !== null ? review.lazaRating : 'N/A'}</p>
-                    </div>
-                ))}
-            </div>
-            <div className="pagination">
-                <button onClick={() => setPage(prev => Math.max(prev - 1, 1))} disabled={page === 1}>Previous</button>
-                <span>Page {page} of {Math.ceil(filteredReviews.length / reviewsPerPage)}</span>
-                <button onClick={() => setPage(prev => prev + 1)} disabled={page * reviewsPerPage >= filteredReviews.length}>Next</button>
+            <div className="reviews-scroll-container">
+                <div className="reviews-grid">
+                    {filteredReviews.map((review, index) => (
+                        <div key={index} className={`review-card ${getReviewClass(review)}`} onClick={() => handleReviewClick(review)}>
+                            <h3>{review.title}</h3>
+                            <p>Ben's Rating: {review.benRating !== null ? review.benRating : 'N/A'}</p>
+                            <p>Laza's Rating: {review.lazaRating !== null ? review.lazaRating : 'N/A'}</p>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {selectedReview && (
@@ -271,4 +274,5 @@ const MovieReviewsAndWatchlist = () => {
     );
 };
 
+// Render the React component
 ReactDOM.render(<MovieReviewsAndWatchlist />, document.getElementById('reviews-container'));

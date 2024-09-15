@@ -175,12 +175,62 @@ p {
     color: var(--accent-color);
 }
 
+/* Reviews container styles */
+.reviews-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Recent reviews styles */
+.recent-reviews {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 40px;
+}
+
+.recent-reviews .review-card {
+    flex: 0 0 250px;
+}
+
+/* Reviews scroll container styles */
+.reviews-scroll-container {
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 20px;
+    margin-bottom: 40px;
+    border: 1px solid var(--section-border);
+    border-radius: 8px;
+    background-color: var(--section-bg);
+}
+
+/* Scrollbar styles */
+.reviews-scroll-container::-webkit-scrollbar {
+    width: 10px;
+}
+
+.reviews-scroll-container::-webkit-scrollbar-track {
+    background: var(--bg-color);
+    border-radius: 5px;
+}
+
+.reviews-scroll-container::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: 5px;
+}
+
+.reviews-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: var(--menu-hover);
+}
+
 /* Reviews and Projects grid styles */
 .reviews-grid, .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
-    margin-top: 20px;
+    padding: 20px;
 }
 
 /* Review and Project card styles */
@@ -412,7 +462,6 @@ p {
 .watchlist-item {
     background-color: var(--section-bg);
     padding: 15px;
-
     border-radius: 8px;
     border: 1px solid var(--section-border);
     text-align: center;
@@ -490,7 +539,7 @@ p {
         width: 200px;
     }
 
-    #content {
+   #content {
         margin-left: 60px;
         width: calc(100% - 60px);
         padding: 20px;
@@ -507,10 +556,12 @@ p {
 
     .sort-buttons {
         margin-top: 10px;
+        flex-wrap: wrap;
     }
 
-    .search-input {
+    .search-input, .filter-select {
         width: 100%;
+        margin-bottom: 10px;
     }
 
     .modal-content {
@@ -542,4 +593,58 @@ p {
     .watchlist-grid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
+
+    .recent-reviews {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    }
+
+    .recent-reviews::-webkit-scrollbar { /* WebKit */
+        width: 0;
+        height: 0;
+    }
+}
+
+/* Add any additional styles or adjustments here */
+
+/* Ensure proper spacing for the last item in the content area */
+#content > *:last-child {
+    margin-bottom: 0;
+}
+
+/* Smooth scrolling for the entire page */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Adjust font sizes for very small screens */
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+
+    h1 {
+        font-size: 2.5em;
+    }
+
+    h2 {
+        font-size: 1.8em;
+    }
+
+    .review-card h3, .project-card h3 {
+        font-size: 1.2em;
+    }
+}
+
+/* Ensure contrast for placeholder text in dark mode */
+.dark-theme .search-input::placeholder {
+    color: rgba(226, 232, 240, 0.7);
+}
+
+/* Add a subtle transition effect for color changes */
+* {
+    transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
 }

@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Check for saved theme preference or default to 'light'
     const savedTheme = localStorage.getItem('theme') || 'dark';
-	setTheme(savedTheme);
+    setTheme(savedTheme);
 
     // Theme toggle event listener
     themeToggle.addEventListener('click', () => {
